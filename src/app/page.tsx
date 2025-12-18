@@ -272,7 +272,7 @@ export default function Home() {
             <div className="grid md:grid-cols-2 gap-16">
               <div>
                 <p className="text-lg text-black/60 dark:text-white/60 font-light leading-relaxed mb-8">
-                  I&apos;m partially a full-stack developer passionate about creating clever digital experiences 
+                  I&apos;m partially a full-stack developer passionate about creating clever digital experiences. 
                   With medium expertise in static and dynamic modern web technologies, I bring ideas either to life or lifeless 
                   through clean code or absurd prompts.
                 </p>
