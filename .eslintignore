@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Config files
+next-env.d.ts
+
+# Components folder (third-party components)
+src/components/
+
