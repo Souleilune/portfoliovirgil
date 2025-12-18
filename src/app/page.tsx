@@ -153,7 +153,7 @@ export default function Home() {
               <span className="text-black/60 dark:text-white/60">Barcelon</span>
             </h1>
             <p className="text-xl text-black/60 dark:text-white/60 font-light max-w-2xl leading-relaxed">
-              I craft digital stories and life experiences in Medium and documenting my Machine Learning journey. 
+              I craft digital stories, life experiences, and documenting my Machine Learning journey in Medium. 
               Specializing in modern web applications and creative technical solutions.
             </p>
             <div className="mt-16 flex gap-6">
