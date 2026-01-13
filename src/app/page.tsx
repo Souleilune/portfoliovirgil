@@ -96,6 +96,12 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Automatically fetch articles for default username on mount
+    fetchMediumArticles('gil-bourboin');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleTheme = () => {
     setIsThemeAnimating(true);
     // Delay theme change to allow smooth transition
