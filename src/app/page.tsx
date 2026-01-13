@@ -322,12 +322,12 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16 sm:pt-20">
+      <main className="pt-12 sm:pt-20">
         {/* Intro Section */}
         <section 
           id="intro"
           ref={(el) => { sectionRefs.current['intro'] = el; }}
-          className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-12 sm:pt-16 pb-20 sm:pb-32"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-6 sm:pt-16 pb-20 sm:pb-32"
         >
           <div className="max-w-4xl w-full">
             <div className="mb-6 sm:mb-8">
@@ -373,7 +373,7 @@ export default function Home() {
         <section 
           id="work"
           ref={(el) => { sectionRefs.current['work'] = el; }}
-          className="min-h-screen py-20 sm:py-32 px-4 sm:px-6 md:px-12"
+          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12"
         >
           <div className="max-w-6xl mx-auto">
             <div className="mb-12 sm:mb-16 md:mb-24">
@@ -465,7 +465,7 @@ export default function Home() {
               {/* Navigation Arrows */}
               <button
                 onClick={prevSlide}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
                 aria-label="Previous slide"
               >
                 <svg 
@@ -479,7 +479,7 @@ export default function Home() {
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
                 aria-label="Next slide"
               >
                 <svg 
@@ -515,7 +515,7 @@ export default function Home() {
         <section 
           id="writing"
           ref={(el) => { sectionRefs.current['writing'] = el; }}
-          className="min-h-screen py-20 sm:py-32 px-4 sm:px-6 md:px-12"
+          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12"
         >
           <div className="max-w-6xl mx-auto">
             <div className="mb-12 sm:mb-16 md:mb-24">
@@ -628,7 +628,7 @@ export default function Home() {
                 {/* Navigation Arrows */}
                 <button
                   onClick={prevArticleSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                  className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
                   aria-label="Previous article"
                 >
                   <svg 
@@ -642,7 +642,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={nextArticleSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                  className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
                   aria-label="Next article"
                 >
                   <svg 
@@ -688,7 +688,7 @@ export default function Home() {
         <section 
           id="about"
           ref={(el) => { sectionRefs.current['about'] = el; }}
-          className="min-h-screen py-20 sm:py-32 px-4 sm:px-6 md:px-12 flex items-center"
+          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12 flex items-center"
         >
           <div className="max-w-4xl mx-auto w-full">
             <div className="mb-12 sm:mb-16">
