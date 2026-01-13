@@ -57,6 +57,10 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   useEffect(() => {
@@ -90,6 +94,53 @@ export default function Home() {
       setMobileMenuOpen(false); // Close mobile menu after navigation
     }
   };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % projects.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    }
+    if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
+      } else if (e.key === 'ArrowRight') {
+        setCurrentSlide((prev) => (prev + 1) % projects.length);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className={`${inter.className} bg-white dark:bg-[#0a0a0a] text-black dark:text-white min-h-screen transition-colors duration-300`}>
@@ -253,72 +304,132 @@ export default function Home() {
               <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20"></div>
             </div>
 
-            <div className="space-y-1">
-              {projects.map((project, index) => {
-                const handleClick = () => {
-                  if (project.link && project.link !== '#') {
-                    const url = project.link.startsWith('http') 
-                      ? project.link 
-                      : `https://${project.link}`;
-                    window.open(url, '_blank', 'noopener,noreferrer');
-                  }
-                };
-
-                return (
-                <div
-                  key={project.id}
-                  onMouseEnter={() => setHoveredProject(project.id)}
-                  onMouseLeave={() => setHoveredProject(null)}
-                  onClick={handleClick}
-                  className="group relative border-b border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all duration-500 py-6 sm:py-8 cursor-pointer"
+            {/* Carousel Container */}
+            <div className="relative">
+              {/* Carousel Wrapper */}
+              <div 
+                ref={carouselRef}
+                className="relative overflow-hidden"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
-                  <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-8 md:gap-12">
-                    <div className="w-full sm:w-20 text-xs sm:text-sm text-black/30 dark:text-white/30 font-light">
-                      {project.year}
-                    </div>
-                    <div className="flex-1 w-full">
-                      <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light mb-2 sm:mb-3 group-hover:text-black/80 dark:group-hover:text-white/80 transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm sm:text-base md:text-lg text-black/50 dark:text-white/50 font-light mb-3 sm:mb-4 max-w-2xl leading-relaxed">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 sm:gap-3">
-                        {project.tech.map((tech) => (
-                          <span
-                            key={tech}
-                            className="text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light px-2 sm:px-3 py-1 border border-black/10 dark:border-white/10 rounded-full"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="hidden sm:flex w-12 items-center justify-center">
-                      <div className={`w-8 h-8 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center transition-all duration-500 ${
-                        hoveredProject === project.id ? 'bg-black/5 dark:bg-white/10 scale-110' : ''
-                      }`}>
-                        <svg 
-                          className="w-4 h-4 text-black/40 dark:text-white/40" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
+                  {projects.map((project, index) => {
+                    const handleClick = () => {
+                      if (project.link && project.link !== '#') {
+                        const url = project.link.startsWith('http') 
+                          ? project.link 
+                          : `https://${project.link}`;
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }
+                    };
+
+                    return (
+                      <div
+                        key={project.id}
+                        className="min-w-full flex-shrink-0 px-2 sm:px-4"
+                      >
+                        <div
+                          onMouseEnter={() => setHoveredProject(project.id)}
+                          onMouseLeave={() => setHoveredProject(null)}
+                          onClick={handleClick}
+                          className="group relative border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-all duration-500 p-6 sm:p-8 md:p-12 cursor-pointer bg-white/50 dark:bg-[#0a0a0a]/50 hover:bg-white/80 dark:hover:bg-[#0a0a0a]/80 rounded-lg"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                        </svg>
+                          <div className="flex flex-col gap-4 sm:gap-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light mb-2 sm:mb-3">
+                                  {project.year}
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light mb-3 sm:mb-4 group-hover:text-black/80 dark:group-hover:text-white/80 transition-colors">
+                                  {project.title}
+                                </h3>
+                                <p className="text-sm sm:text-base md:text-lg text-black/50 dark:text-white/50 font-light mb-4 sm:mb-6 leading-relaxed max-w-2xl">
+                                  {project.description}
+                                </p>
+                              </div>
+                              <div className="flex-shrink-0">
+                                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center transition-all duration-500 ${
+                                  hoveredProject === project.id ? 'bg-black/5 dark:bg-white/10 scale-110' : ''
+                                }`}>
+                                  <svg 
+                                    className="w-5 h-5 sm:w-6 sm:h-6 text-black/40 dark:text-white/40" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                              {project.tech.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light px-2 sm:px-3 py-1 border border-black/10 dark:border-white/10 rounded-full"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Hover indicator line */}
-                  <div 
-                    className={`hidden sm:block absolute left-0 top-0 h-full w-px bg-black/20 dark:bg-white/20 transition-all duration-500 ${
-                      hoveredProject === project.id ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  />
+                    );
+                  })}
                 </div>
-                );
-              })}
+              </div>
+
+              {/* Navigation Arrows */}
+              <button
+                onClick={prevSlide}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                aria-label="Previous slide"
+              >
+                <svg 
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                aria-label="Next slide"
+              >
+                <svg 
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Slide Indicators */}
+              <div className="flex justify-center gap-2 mt-8 sm:mt-12">
+                {projects.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      currentSlide === index
+                        ? 'bg-black/60 dark:bg-white/60 w-8'
+                        : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
