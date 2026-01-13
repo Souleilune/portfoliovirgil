@@ -52,15 +52,31 @@ const projects = [
   }
 ];
 
+interface MediumArticle {
+  title: string;
+  link: string;
+  pubDate: string;
+  author: string;
+  description?: string;
+}
+
 export default function Home() {
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isThemeAnimating, setIsThemeAnimating] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [mediumUsername, setMediumUsername] = useState('gil-bourboin');
+  const [articles, setArticles] = useState<MediumArticle[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+  const [articlesError, setArticlesError] = useState<string | null>(null);
+  const [currentArticleSlide, setCurrentArticleSlide] = useState(0);
+  const [articleTouchStart, setArticleTouchStart] = useState(0);
+  const [articleTouchEnd, setArticleTouchEnd] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const articlesCarouselRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   useEffect(() => {
@@ -81,17 +97,18 @@ export default function Home() {
   }, []);
 
   const toggleTheme = () => {
+    setIsThemeAnimating(true);
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    setTimeout(() => setIsThemeAnimating(false), 600);
   };
 
   const scrollTo = (id: string) => {
     const element = sectionRefs.current[id];
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setMobileMenuOpen(false); // Close mobile menu after navigation
     }
   };
 
@@ -131,126 +148,172 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle arrow keys if not typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
       if (e.key === 'ArrowLeft') {
-        setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
+        // Navigate articles carousel if it has items, otherwise navigate projects
+        if (articles.length > 0) {
+          setCurrentArticleSlide((prev) => (prev - 1 + articles.length) % articles.length);
+        } else {
+          setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
+        }
       } else if (e.key === 'ArrowRight') {
-        setCurrentSlide((prev) => (prev + 1) % projects.length);
+        // Navigate articles carousel if it has items, otherwise navigate projects
+        if (articles.length > 0) {
+          setCurrentArticleSlide((prev) => (prev + 1) % articles.length);
+        } else {
+          setCurrentSlide((prev) => (prev + 1) % projects.length);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [articles.length]);
+
+  const fetchMediumArticles = async (username: string) => {
+    setArticlesLoading(true);
+    setArticlesError(null);
+    
+    try {
+      const response = await fetch(`/api/medium?username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch articles');
+      }
+      
+      setArticles(data.articles || []);
+      setCurrentArticleSlide(0);
+    } catch (error) {
+      setArticlesError(error instanceof Error ? error.message : 'Failed to fetch articles');
+      setArticles([]);
+    } finally {
+      setArticlesLoading(false);
+    }
+  };
+
+  const handleFetchArticles = () => {
+    if (mediumUsername.trim()) {
+      fetchMediumArticles(mediumUsername.trim());
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const nextArticleSlide = () => {
+    if (articles.length > 0) {
+      setCurrentArticleSlide((prev) => (prev + 1) % articles.length);
+    }
+  };
+
+  const prevArticleSlide = () => {
+    if (articles.length > 0) {
+      setCurrentArticleSlide((prev) => (prev - 1 + articles.length) % articles.length);
+    }
+  };
+
+  const goToArticleSlide = (index: number) => {
+    setCurrentArticleSlide(index);
+  };
+
+  const handleArticleTouchStart = (e: React.TouchEvent) => {
+    setArticleTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleArticleTouchMove = (e: React.TouchEvent) => {
+    setArticleTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleArticleTouchEnd = () => {
+    if (!articleTouchStart || !articleTouchEnd) return;
+    const distance = articleTouchStart - articleTouchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextArticleSlide();
+    }
+    if (isRightSwipe) {
+      prevArticleSlide();
+    }
+  };
 
   return (
     <div className={`${inter.className} bg-white dark:bg-[#0a0a0a] text-black dark:text-white min-h-screen transition-colors duration-300`}>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="fixed top-4 right-4 z-50 md:hidden w-12 h-12 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm"
-        aria-label="Toggle menu"
-      >
-        {mobileMenuOpen ? (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        ) : (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        )}
-      </button>
 
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 md:hidden bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-sm">
-          <div className="flex flex-col items-center justify-center h-full gap-8">
+      {/* Floating Top Navigation Bar */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto sm:min-w-[400px] max-w-2xl">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-2.5 sm:py-3.5 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="flex items-center gap-1 sm:gap-3 flex-1 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => scrollTo('intro')}
-              className="text-lg font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               Intro
             </button>
             <button
               onClick={() => scrollTo('work')}
-              className="text-lg font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               Work
             </button>
             <button
+              onClick={() => scrollTo('writing')}
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
+            >
+              Writing
+            </button>
+            <button
               onClick={() => scrollTo('about')}
-              className="text-lg font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               About
             </button>
-            <button
-              onClick={toggleTheme}
-              className="mt-4 w-12 h-12 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <svg className="w-6 h-6 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
-            </button>
           </div>
-        </div>
-      )}
-
-      {/* Fixed Sidebar Navigation - Desktop Only */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-full w-20 flex-col items-center justify-between py-12 z-50 border-r border-black/10 dark:border-white/5 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-sm">
-        <div className="flex flex-col gap-8">
-          <button
-            onClick={() => scrollTo('intro')}
-            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors writing-vertical-rl rotate-180"
-          >
-            Intro
-          </button>
-          <button
-            onClick={() => scrollTo('work')}
-            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors writing-vertical-rl rotate-180"
-          >
-            Work
-          </button>
-          <button
-            onClick={() => scrollTo('about')}
-            className="text-xs font-medium text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors writing-vertical-rl rotate-180"
-          >
-            About
-          </button>
           <button
             onClick={toggleTheme}
-            className="mt-8 w-10 h-10 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300"
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 hover:scale-110 active:scale-95 transition-all duration-300 flex-shrink-0 ${isThemeAnimating ? 'animate-spin' : ''}`}
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
-              <svg className="w-5 h-5 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             ) : (
-              <svg className="w-5 h-5 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             )}
           </button>
         </div>
-        <div className="text-xs text-black/20 dark:text-white/20 font-light">
-          VB
-        </div>
-      </aside>
+      </nav>
 
       {/* Main Content */}
-      <main className="md:ml-20">
+      <main className="pt-16 sm:pt-20">
         {/* Intro Section */}
         <section 
           id="intro"
           ref={(el) => { sectionRefs.current['intro'] = el; }}
-          className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 py-20 sm:py-32"
+          className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-12 sm:pt-16 pb-20 sm:pb-32"
         >
           <div className="max-w-4xl w-full">
             <div className="mb-6 sm:mb-8">
@@ -431,6 +494,179 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Writing Section */}
+        <section 
+          id="writing"
+          ref={(el) => { sectionRefs.current['writing'] = el; }}
+          className="min-h-screen py-20 sm:py-32 px-4 sm:px-6 md:px-12"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12 sm:mb-16 md:mb-24">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-4">Writing</h2>
+              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20 mb-4"></div>
+              <p className="text-sm sm:text-base text-black/50 dark:text-white/50 font-light">
+                Recent stories from Medium
+              </p>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex-1 w-full">
+                <label htmlFor="medium-username" className="block text-xs sm:text-sm text-black/40 dark:text-white/40 font-light mb-2">
+                  Medium Username
+                </label>
+                <input
+                  id="medium-username"
+                  type="text"
+                  value={mediumUsername}
+                  onChange={(e) => setMediumUsername(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleFetchArticles();
+                    }
+                  }}
+                  placeholder="gil-bourboin"
+                  className="w-full px-4 py-2 sm:py-3 border border-black/20 dark:border-white/20 bg-white/50 dark:bg-[#0a0a0a]/50 rounded-lg text-black dark:text-white placeholder:text-black/30 dark:placeholder:text-white/30 focus:outline-none focus:border-black/40 dark:focus:border-white/40 transition-colors"
+                />
+              </div>
+              <button
+                onClick={handleFetchArticles}
+                disabled={articlesLoading || !mediumUsername.trim()}
+                className="px-6 py-2 sm:py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-light text-sm sm:text-base hover:bg-black/80 dark:hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                {articlesLoading ? 'Fetching...' : 'Fetch Stories'}
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {articlesError && (
+              <div className="mb-8 p-4 border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <p className="text-sm text-red-600 dark:text-red-400">{articlesError}</p>
+              </div>
+            )}
+
+            {/* Articles Carousel */}
+            {articles.length > 0 && (
+              <div className="relative">
+                {/* Carousel Wrapper */}
+                <div 
+                  ref={articlesCarouselRef}
+                  className="relative overflow-hidden"
+                  onTouchStart={handleArticleTouchStart}
+                  onTouchMove={handleArticleTouchMove}
+                  onTouchEnd={handleArticleTouchEnd}
+                >
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${currentArticleSlide * 100}%)` }}
+                  >
+                    {articles.map((article, index) => {
+                      const handleArticleClick = () => {
+                        window.open(article.link, '_blank', 'noopener,noreferrer');
+                      };
+
+                      return (
+                        <div
+                          key={index}
+                          className="min-w-full flex-shrink-0 px-2 sm:px-4"
+                        >
+                          <div
+                            onClick={handleArticleClick}
+                            className="group relative border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-all duration-500 p-6 sm:p-8 md:p-12 cursor-pointer bg-white/50 dark:bg-[#0a0a0a]/50 hover:bg-white/80 dark:hover:bg-[#0a0a0a]/80 rounded-lg"
+                          >
+                            <div className="flex flex-col gap-4 sm:gap-6">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light mb-2 sm:mb-3">
+                                    {article.author}
+                                  </div>
+                                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light mb-3 sm:mb-4 group-hover:text-black/80 dark:group-hover:text-white/80 transition-colors">
+                                    {article.title}
+                                  </h3>
+                                  <p className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light">
+                                    {formatDate(article.pubDate)}
+                                  </p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center transition-all duration-500 group-hover:bg-black/5 dark:group-hover:bg-white/10 group-hover:scale-110">
+                                    <svg 
+                                      className="w-5 h-5 sm:w-6 sm:h-6 text-black/40 dark:text-white/40" 
+                                      fill="none" 
+                                      stroke="currentColor" 
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={prevArticleSlide}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                  aria-label="Previous article"
+                >
+                  <svg 
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextArticleSlide}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
+                  aria-label="Next article"
+                >
+                  <svg 
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Slide Indicators */}
+                <div className="flex justify-center gap-2 mt-8 sm:mt-12">
+                  {articles.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToArticleSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        currentArticleSlide === index
+                          ? 'bg-black/60 dark:bg-white/60 w-8'
+                          : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40'
+                      }`}
+                      aria-label={`Go to article ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!articlesLoading && articles.length === 0 && !articlesError && (
+              <div className="text-center py-12">
+                <p className="text-sm sm:text-base text-black/40 dark:text-white/40 font-light">
+                  Enter a Medium username and click &quot;Fetch Stories&quot; to load articles
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
