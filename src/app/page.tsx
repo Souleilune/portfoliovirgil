@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Inter } from 'next/font/google';
+import TiltedCard from '@/components/TiltedCard';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -336,22 +337,22 @@ export default function Home() {
           ref={(el) => { sectionRefs.current['intro'] = el; }}
           className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-6 sm:pt-16 pb-20 sm:pb-32"
         >
-          <div className="max-w-4xl w-full">
+          <div className="max-w-4xl w-full text-center">
             <div className="mb-6 sm:mb-8">
               <span className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light tracking-wider uppercase">
                 Full-Stack Developer
               </span>
             </div>
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-8 sm:mb-12 tracking-tight">
-              Virgil
+              Virgil <span className="text-black/60 dark:text-white/60">Barcelon</span>
               <br />
-              <span className="text-black/60 dark:text-white/60">Barcelon</span>
+              
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-black/60 dark:text-white/60 font-light max-w-2xl leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-black/60 dark:text-white/60 font-light max-w-2xl mx-auto leading-relaxed">
               I craft digital stories, life experiences, and documenting my Machine Learning journey in Medium. 
               Specializing in modern web applications and creative technical solutions.
             </p>
-            <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
               <a 
                 href="#work"
                 onClick={(e) => { e.preventDefault(); scrollTo('work'); }}
@@ -375,6 +376,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        
 
         {/* Work Section */}
         <section 
@@ -688,6 +691,31 @@ export default function Home() {
                 </p>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* Profile Image Section */}
+        <section className="py-8 sm:py-12 px-4 sm:px-6 md:px-12">
+          <div className="max-w-6xl mx-auto flex items-center justify-center">
+            <TiltedCard
+              imageSrc="/dev.jpg"
+              altText="Virgil Barcelon - Full-Stack Developer"
+              captionText="Virgil Barcelon"
+              containerHeight="300px"
+              containerWidth="300px"
+              imageHeight="300px"
+              imageWidth="300px"
+              rotateAmplitude={12}
+              scaleOnHover={1.2}
+              showMobileWarning={false}
+              showTooltip={true}
+              displayOverlayContent={true}
+              overlayContent={
+                <p className="text-white text-lg font-medium px-5 py-2 bg-gray-200/10 rounded-2xl backdrop-blur-sm mt-10 ml-5">
+                  Virgil Barcelon
+                </p>
+              }
+            />
           </div>
         </section>
 
