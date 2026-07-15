@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Inter } from 'next/font/google';
+import Image from 'next/image';
 import TiltedCard from '@/components/TiltedCard';
 
 const inter = Inter({
@@ -17,7 +18,8 @@ const projects = [
     title: "TechSync",
     description: "A developer collaboration platform for sharing code and ideas.",
     tech: ["React", "Node.js", "Supabase", "Vercel", "Render", "Gemini AI"],
-    link: "https://techsync-dev.vercel.app"
+    link: "https://techsync-dev.vercel.app",
+    image: "/work/techsync.png"
   },
   {
     id: 2,
@@ -25,7 +27,8 @@ const projects = [
     title: "Fluffychoo.co",
     description: "Point of sale system for a micro bakery shop.",
     tech: ["Next.js", "Tailwind CSS", "Supabase", "Vercel"],
-    link: "fluffychoo.vercel.app"
+    link: "fluffychoo.vercel.app",
+    image: "/work/fluffychoo.png"
   },
   {
     id: 3,
@@ -33,7 +36,8 @@ const projects = [
     title: "Beware",
     description: "Corruption awareness platform for the Philippines.",
     tech: ["Next.js", "Tailwind CSS", "Supabase", "Vercel", "Gemini AI"],
-    link: "bewarebyvirgil.vercel.app"
+    link: "bewarebyvirgil.vercel.app",
+    image: "/work/beware.png"
   },
   {
     id: 4,
@@ -41,7 +45,8 @@ const projects = [
     title: "SurrealBot",
     description: "Chat Companion as Web Extension",
     tech: ["Javascript", "HTML", "CSS", "Flask", "Python", "ManifestV3", "Ollama"],
-    link: "#"
+    link: "#",
+    image: "/work/surrealbot.png"
   },
   {
     id: 5,
@@ -49,7 +54,8 @@ const projects = [
     title: "3Whites",
     description: "Powerlifting mobile application for tracking lifts and progress.",
     tech: ["Kotlin", "Android Studio", "Firebase", "YOLO11n"],
-    link: "#"
+    link: "#",
+    image: "/work/3whites.png"
   }
 ];
 
@@ -62,13 +68,8 @@ interface MediumArticle {
 }
 
 export default function Home() {
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
-  const [scrollY, setScrollY] = useState(0);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isThemeAnimating, setIsThemeAnimating] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
   const [mediumUsername, setMediumUsername] = useState('gil-bourboin');
   const [articles, setArticles] = useState<MediumArticle[]>([]);
   const [articlesLoading, setArticlesLoading] = useState(false);
@@ -76,7 +77,10 @@ export default function Home() {
   const [currentArticleSlide, setCurrentArticleSlide] = useState(0);
   const [articleTouchStart, setArticleTouchStart] = useState(0);
   const [articleTouchEnd, setArticleTouchEnd] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  // ── Reading progress ──
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [isInWritingSection, setIsInWritingSection] = useState(false);
+
   const articlesCarouselRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
@@ -89,19 +93,47 @@ export default function Home() {
     document.documentElement.classList.toggle('dark', initialTheme === 'dark');
   }, []);
 
-
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const currentScrollY = window.scrollY;
+
+      // ── Reading progress: scoped to Writing section ──
+      const writingEl = sectionRefs.current['writing'];
+      if (writingEl) {
+        const { top, height } = writingEl.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        // Section is considered "active" once its top enters the viewport
+        // and until its bottom leaves
+        const sectionTop = currentScrollY + top;
+        const sectionBottom = sectionTop + height;
+        const scrollStart = sectionTop - windowHeight;
+        const scrollEnd = sectionBottom - windowHeight;
+
+        if (currentScrollY >= scrollStart && currentScrollY <= scrollEnd) {
+          setIsInWritingSection(true);
+          const progress = Math.min(
+            100,
+            Math.max(
+              0,
+              ((currentScrollY - scrollStart) / (scrollEnd - scrollStart)) * 100
+            )
+          );
+          setReadingProgress(progress);
+        } else {
+          setIsInWritingSection(false);
+          setReadingProgress(currentScrollY < scrollStart ? 0 : 100);
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     // Automatically fetch articles for default username on mount
     fetchMediumArticles('gil-bourboin');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleTheme = () => {
@@ -123,40 +155,6 @@ export default function Home() {
     }
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % projects.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      nextSlide();
-    }
-    if (isRightSwipe) {
-      prevSlide();
-    }
-  };
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle arrow keys if not typing in an input
@@ -165,18 +163,12 @@ export default function Home() {
       }
       
       if (e.key === 'ArrowLeft') {
-        // Navigate articles carousel if it has items, otherwise navigate projects
         if (articles.length > 0) {
           setCurrentArticleSlide((prev) => (prev - 1 + articles.length) % articles.length);
-        } else {
-          setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length);
         }
       } else if (e.key === 'ArrowRight') {
-        // Navigate articles carousel if it has items, otherwise navigate projects
         if (articles.length > 0) {
           setCurrentArticleSlide((prev) => (prev + 1) % articles.length);
-        } else {
-          setCurrentSlide((prev) => (prev + 1) % projects.length);
         }
       }
     };
@@ -271,6 +263,16 @@ export default function Home() {
   return (
     <div className={`${inter.className} bg-white dark:bg-[#0a0a0a] text-black dark:text-white min-h-screen transition-colors duration-300`}>
 
+      {/* ── Reading progress bar ── */}
+      <div
+        className="reading-progress-bar"
+        style={{
+          width: `${readingProgress}%`,
+          opacity: isInWritingSection ? 1 : 0,
+        }}
+        aria-hidden="true"
+      />
+
       {/* Floating Top Navigation Bar */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto sm:min-w-[400px] max-w-2xl">
         <div className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-2.5 sm:py-3.5 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
@@ -335,7 +337,7 @@ export default function Home() {
         <section 
           id="intro"
           ref={(el) => { sectionRefs.current['intro'] = el; }}
-          className="min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-6 sm:pt-16 pb-20 sm:pb-32"
+          className="relative hero-grain min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-6 sm:pt-16 pb-20 sm:pb-32"
         >
           <div className="max-w-4xl w-full text-center">
             <div className="mb-6 sm:mb-8">
@@ -391,132 +393,78 @@ export default function Home() {
               <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20"></div>
             </div>
 
-            {/* Carousel Container */}
-            <div className="relative">
-              {/* Carousel Wrapper */}
-              <div 
-                ref={carouselRef}
-                className="relative overflow-hidden"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                <div 
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                >
-                  {projects.map((project, index) => {
-                    const handleClick = () => {
-                      if (project.link && project.link !== '#') {
-                        const url = project.link.startsWith('http') 
-                          ? project.link 
-                          : `https://${project.link}`;
-                        window.open(url, '_blank', 'noopener,noreferrer');
-                      }
-                    };
+            {/* Project Collage */}
+            <div className="grid grid-cols-1 md:grid-cols-12 auto-rows-[220px] sm:auto-rows-[260px] gap-4 sm:gap-5">
+              {projects.map((project, index) => {
+                const projectUrl = project.link && project.link !== '#'
+                  ? project.link.startsWith('http')
+                    ? project.link
+                    : `https://${project.link}`
+                  : null;
+                const tileClasses = [
+                  'md:col-span-7 md:row-span-2',
+                  'md:col-span-5',
+                  'md:col-span-5',
+                  'md:col-span-6',
+                  'md:col-span-6',
+                ];
 
-                    return (
-                      <div
-                        key={project.id}
-                        className="min-w-full flex-shrink-0 px-2 sm:px-4"
-                      >
-                        <div
-                          onMouseEnter={() => setHoveredProject(project.id)}
-                          onMouseLeave={() => setHoveredProject(null)}
-                          onClick={handleClick}
-                          className="group relative border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-all duration-500 p-6 sm:p-8 md:p-12 cursor-pointer bg-white/50 dark:bg-[#0a0a0a]/50 hover:bg-white/80 dark:hover:bg-[#0a0a0a]/80 rounded-lg"
-                        >
-                          <div className="flex flex-col gap-4 sm:gap-6">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light mb-2 sm:mb-3">
-                                  {project.year}
-                                </div>
-                                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light mb-3 sm:mb-4 group-hover:text-black/80 dark:group-hover:text-white/80 transition-colors">
-                                  {project.title}
-                                </h3>
-                                <p className="text-sm sm:text-base md:text-lg text-black/50 dark:text-white/50 font-light mb-4 sm:mb-6 leading-relaxed max-w-2xl">
-                                  {project.description}
-                                </p>
-                              </div>
-                              <div className="flex-shrink-0">
-                                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center transition-all duration-500 ${
-                                  hoveredProject === project.id ? 'bg-black/5 dark:bg-white/10 scale-110' : ''
-                                }`}>
-                                  <svg 
-                                    className="w-5 h-5 sm:w-6 sm:h-6 text-black/40 dark:text-white/40" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap gap-2 sm:gap-3">
-                              {project.tech.map((tech) => (
-                                <span
-                                  key={tech}
-                                  className="text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light px-2 sm:px-3 py-1 border border-black/10 dark:border-white/10 rounded-full"
-                                >
-                                  {tech}
-                                </span>
-                              ))}
-                            </div>
+                return (
+                  <a
+                    key={project.id}
+                    href={projectUrl || undefined}
+                    target={projectUrl ? '_blank' : undefined}
+                    rel={projectUrl ? 'noopener noreferrer' : undefined}
+                    aria-disabled={!projectUrl}
+                    className={`group relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-black/30 dark:hover:border-white/30 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-white/5 ${tileClasses[index]}`}
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.08),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.92),rgba(0,0,0,0.04))] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.01))]" />
+
+                    {project.image ? (
+                      <div className="absolute inset-x-4 top-4 bottom-24 overflow-hidden rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0a] shadow-xl">
+                        <Image
+                          src={project.image}
+                          alt={`${project.title} frontpage preview`}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 dark:from-black/40" />
+                      </div>
+                    ) : (
+                      <div className="absolute inset-x-4 top-4 bottom-24 flex items-center justify-center rounded-xl border border-dashed border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04]">
+                        <span className="text-sm text-black/35 dark:text-white/35 font-light">Preview coming soon</span>
+                      </div>
+                    )}
+
+                    <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-6 bg-gradient-to-t from-white via-white/95 to-white/0 dark:from-[#0a0a0a] dark:via-[#0a0a0a]/95 dark:to-[#0a0a0a]/0">
+                      <div className="flex items-end justify-between gap-4">
+                        <div>
+                          <div className="text-xs text-black/40 dark:text-white/40 font-light mb-1">
+                            {project.year}
                           </div>
+                          <h3 className="text-2xl sm:text-3xl font-light group-hover:text-black/75 dark:group-hover:text-white/75 transition-colors">
+                            {project.title}
+                          </h3>
+                          <p className="mt-2 text-sm text-black/50 dark:text-white/50 font-light line-clamp-2">
+                            {project.description}
+                          </p>
+                        </div>
+                        <div className="hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-black/15 dark:border-white/15 bg-white/70 dark:bg-white/[0.04] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/5 dark:group-hover:bg-white/10">
+                          <svg
+                            className="h-5 w-5 text-black/45 dark:text-white/45"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 17L17 7M17 7H8M17 7v9" />
+                          </svg>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevSlide}
-                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-8 md:-translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
-                aria-label="Previous slide"
-              >
-                <svg 
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={nextSlide}
-                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-8 md:translate-x-12 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-black/20 dark:border-white/20 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-sm items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 z-10"
-                aria-label="Next slide"
-              >
-                <svg 
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-black/60 dark:text-white/60" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              {/* Slide Indicators */}
-              <div className="flex justify-center gap-2 mt-8 sm:mt-12">
-                {projects.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      currentSlide === index
-                        ? 'bg-black/60 dark:bg-white/60 w-8'
-                        : 'bg-black/20 dark:bg-white/20 hover:bg-black/40 dark:hover:bg-white/40'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
         </section>
