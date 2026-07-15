@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type MouseEvent } from 'react';
 import { Inter } from 'next/font/google';
 import Image from 'next/image';
-import { motion } from 'motion/react';
-import { Building2, Calendar, CheckCircle2 } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import {
+  Building2,
+  Calendar,
+  CheckCircle2,
+  BookOpen,
+  ArrowUpRight,
+} from 'lucide-react';
 import TiltedCard from '@/components/TiltedCard';
 import SideRays from '@/components/SideRays';
 
@@ -84,14 +90,58 @@ const experiences: Experience[] = [
   },
 ];
 
+const skillGroups = [
+  {
+    title: 'Frontend',
+    skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+  },
+  {
+    title: 'Backend',
+    skills: ['Node.js', 'PostgreSQL', 'REST APIs', 'Express.js'],
+  },
+  {
+    title: 'Tools & ML',
+    skills: ['Git', 'CI/CD', 'RoboFlow', 'Gemini AI', 'Jupyter', 'Colab'],
+  },
+  {
+    title: 'Also into',
+    skills: ['Kotlin', 'YOLO', 'Supabase', 'Chrome Extensions'],
+  },
+];
+
+const marqueeSkills = [
+  'React', 'Next.js', 'TypeScript', 'Tailwind', 'Node.js', 'PostgreSQL',
+  'Supabase', 'Gemini AI', 'Kotlin', 'YOLO', 'Flask', 'Ollama',
+  'Vercel', 'Render', 'Git', 'Firebase', 'Python', 'Android',
+];
+
+const aboutStats = [
+  { value: '5+', label: 'Projects shipped' },
+  { value: '12+', label: 'Tools in rotation' },
+  { value: '∞', label: 'Late-night deploys' },
+  { value: 'PH', label: 'Based in' },
+];
+
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isThemeAnimating, setIsThemeAnimating] = useState(false);
   // ── Reading progress ──
   const [readingProgress, setReadingProgress] = useState(0);
   const [isInWritingSection, setIsInWritingSection] = useState(false);
-
   const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+  const aboutRef = useRef<HTMLElement | null>(null);
+
+  // ── About section mouse parallax ──
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const blob1X = useTransform(springX, [0, 1], [-40, 40]);
+  const blob1Y = useTransform(springY, [0, 1], [-30, 30]);
+  const blob2X = useTransform(springX, [0, 1], [50, -50]);
+  const blob2Y = useTransform(springY, [0, 1], [40, -40]);
+  const blob3X = useTransform(springX, [0, 1], [-25, 25]);
+  const blob3Y = useTransform(springY, [0, 1], [35, -35]);
 
   useEffect(() => {
     // Check for saved theme preference or default to dark
@@ -159,6 +209,14 @@ export default function Home() {
     }
   };
 
+  const handleAboutMouseMove = (e: MouseEvent<HTMLElement>) => {
+    const el = aboutRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
+  };
+
   return (
     <div className={`${inter.className} bg-white dark:bg-[#0a0a0a] text-black dark:text-white min-h-screen transition-colors duration-300`}>
 
@@ -174,36 +232,36 @@ export default function Home() {
 
       {/* Floating Top Navigation Bar */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-auto sm:min-w-[400px] max-w-2xl">
-        <div className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-2.5 sm:py-3.5 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="flex items-center gap-10 sm:gap-16 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="flex items-center gap-1 sm:gap-3 flex-1 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => scrollTo('intro')}
-              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               Intro
             </button>
             <button
               onClick={() => scrollTo('work')}
-              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               Work
             </button>
             <button
               onClick={() => scrollTo('writing')}
-              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               Experience
             </button>
             <button
               onClick={() => scrollTo('about')}
-              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
+              className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
               About
             </button>
           </div>
           <button
             onClick={toggleTheme}
-            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/20 dark:border-white/20 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 hover:scale-110 active:scale-95 transition-all duration-300 flex-shrink-0 relative ${isThemeAnimating ? 'animate-spin-once' : ''}`}
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-black/20 dark:border-white/20 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 hover:scale-110 active:scale-95 transition-all duration-300 flex-shrink-0 relative ${isThemeAnimating ? 'animate-spin-once' : ''}`}
             aria-label="Toggle theme"
           >
             <div className="relative w-4 h-4 sm:w-5 sm:h-5">
@@ -346,26 +404,59 @@ export default function Home() {
                           sizes="(min-width: 768px) 50vw, 100vw"
                           className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 dark:from-black/40" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 dark:from-black/40 transition-opacity duration-500 group-hover:opacity-0" />
+
+                        {/* Hover reveal: stack over preview */}
+                        <div
+                          className="absolute inset-0 z-10 flex flex-col justify-end p-3 sm:p-4 opacity-0 translate-y-2 pointer-events-none transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-y-0"
+                          aria-hidden="true"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100" />
+                          <div className="relative">
+                            <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.16em] text-white/55 font-light mb-2">
+                              Stack
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {project.tech.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="text-[10px] sm:text-xs px-2 py-1 rounded-md border border-white/20 bg-white/10 text-white/90 font-light backdrop-blur-sm"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ) : (
-                      <div className="absolute inset-x-4 top-4 bottom-24 flex items-center justify-center rounded-xl border border-dashed border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04]">
+                      <div className="absolute inset-x-4 top-4 bottom-24 flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.04] px-4">
                         <span className="text-sm text-black/35 dark:text-white/35 font-light">Preview coming soon</span>
+                        <div className="flex flex-wrap justify-center gap-1.5">
+                          {project.tech.map((tech) => (
+                            <span
+                              key={tech}
+                              className="text-[10px] px-2 py-1 rounded-md border border-black/10 dark:border-white/10 text-black/45 dark:text-white/45 font-light"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
 
                     <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-6 bg-gradient-to-t from-white via-white/95 to-white/0 dark:from-[#0a0a0a] dark:via-[#0a0a0a]/95 dark:to-[#0a0a0a]/0">
                       <div className="flex items-end justify-between gap-4">
                         <div>
-                          <div className="text-xs text-black/40 dark:text-white/40 font-light mb-1">
-                            {project.year}
-                          </div>
                           <h3 className="text-2xl sm:text-3xl font-light group-hover:text-black/75 dark:group-hover:text-white/75 transition-colors">
                             {project.title}
                           </h3>
                           <p className="mt-2 text-sm text-black/50 dark:text-white/50 font-light line-clamp-2">
                             {project.description}
                           </p>
+                          <div className="mt-2 text-xs text-black/40 dark:text-white/40 font-light">
+                            {project.year}
+                          </div>
                         </div>
                         <div className="hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-black/15 dark:border-white/15 bg-white/70 dark:bg-white/[0.04] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/5 dark:group-hover:bg-white/10">
                           <svg
@@ -478,78 +569,298 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Profile Image Section */}
-        <section className="py-8 sm:py-12 px-4 sm:px-6 md:px-12">
-          <div className="max-w-6xl mx-auto flex items-center justify-center">
-            <TiltedCard
-              imageSrc="/dev.jpg"
-              altText="Virgil Barcelon - Full-Stack Developer"
-              captionText="Virgil Barcelon"
-              containerHeight="300px"
-              containerWidth="300px"
-              imageHeight="300px"
-              imageWidth="300px"
-              rotateAmplitude={12}
-              scaleOnHover={1.2}
-              showMobileWarning={false}
-              showTooltip={true}
-              displayOverlayContent={true}
-              overlayContent={
-                <p className="text-white text-lg font-medium px-5 py-2 bg-gray-200/10 rounded-2xl backdrop-blur-sm mt-10 ml-5">
-                  Virgil Barcelon
-                </p>
-              }
-            />
-          </div>
-        </section>
-
         {/* About Section */}
-        <section 
+        <section
           id="about"
-          ref={(el) => { sectionRefs.current['about'] = el; }}
-          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12 flex items-center"
+          ref={(el) => {
+            sectionRefs.current['about'] = el;
+            aboutRef.current = el;
+          }}
+          onMouseMove={handleAboutMouseMove}
+          className="relative min-h-screen overflow-hidden pt-16 pb-24 sm:py-32 px-4 sm:px-6 md:px-12"
         >
-          <div className="max-w-4xl mx-auto w-full">
-            <div className="mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-4">About</h2>
-              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20"></div>
+          {/* Parallax ambient blobs */}
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 sm:w-[28rem] sm:h-[28rem] rounded-full bg-black/[0.04] dark:bg-white/[0.05] blur-3xl"
+            style={{ x: blob1X, y: blob1Y }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/3 -right-32 w-80 h-80 sm:w-[32rem] sm:h-[32rem] rounded-full bg-black/[0.03] dark:bg-white/[0.04] blur-3xl"
+            style={{ x: blob2X, y: blob2Y }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 left-1/3 w-64 h-64 sm:w-96 sm:h-96 rounded-full bg-black/[0.035] dark:bg-white/[0.035] blur-3xl"
+            style={{ x: blob3X, y: blob3Y }}
+          />
+
+          <div className="relative max-w-6xl mx-auto w-full z-10">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="mb-12 sm:mb-16 md:mb-20"
+            >
+              {/* <div className="flex items-center gap-3 mb-4">
+                <span className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.25em] text-black/40 dark:text-white/40 font-light">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black/40 dark:bg-white/40 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-black/60 dark:bg-white/60" />
+                  </span>
+                  Currently building weird things
+                </span>
+              </div> */}
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-4">
+                The human{' '}
+                <span className="text-black/35 dark:text-white/35 italic">behind</span>
+                <br className="hidden sm:block" />
+                the commits
+              </h2>
+              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20" />
+            </motion.div>
+
+            {/* Hero row: photo + bio */}
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center mb-14 sm:mb-20">
+              {/* Photo stage */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className="lg:col-span-5 relative flex justify-center"
+              >
+                {/* Orbit ring */}
+                {/* <div
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
+                  <div className="about-orbit w-[min(100%,340px)] h-[min(100%,340px)] sm:w-[380px] sm:h-[380px] rounded-full border border-dashed border-black/10 dark:border-white/10" />
+                </div>
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
+                  <div className="about-orbit-reverse w-[min(100%,280px)] h-[min(100%,280px)] sm:w-[320px] sm:h-[320px] rounded-full border border-black/5 dark:border-white/5" />
+                </div> */}
+
+                {/* Floating chips around photo */}
+                <motion.span
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute top-2 left-0 sm:left-4 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Full-stack
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                  className="absolute top-16 right-0 sm:right-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  ML curious
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                  className="absolute bottom-10 left-0 sm:left-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Writes on Medium
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+                  className="absolute bottom-2 right-2 sm:right-6 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Ships at 2am
+                </motion.span>
+
+                <div className="relative z-10">
+                  <TiltedCard
+                    imageSrc="/dev.jpg"
+                    altText="Virgil Barcelon - Full-Stack Developer"
+                    captionText="Virgil Barcelon"
+                    containerHeight="300px"
+                    containerWidth="300px"
+                    imageHeight="300px"
+                    imageWidth="300px"
+                    rotateAmplitude={14}
+                    scaleOnHover={1.12}
+                    showMobileWarning={false}
+                    showTooltip={true}
+                    displayOverlayContent={true}
+                    overlayContent={
+                      <p className="text-white text-sm sm:text-base font-medium px-4 py-2 bg-black/30 rounded-2xl backdrop-blur-md mt-8 ml-4 border border-white/10">
+                        hey, it&apos;s me
+                      </p>
+                    }
+                  />
+                </div>
+              </motion.div>
+
+              {/* Bio */}
+              <motion.div
+                initial={{ opacity: 0, x: 32 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
+                className="lg:col-span-7 space-y-6"
+              >
+                <p className="text-xl sm:text-2xl md:text-3xl font-light leading-snug tracking-tight text-black/80 dark:text-white/80">
+                  I craft digital stories, ship full-stack apps, and document the chaos of learning machine learning —{' '}
+                  <span className="text-black/40 dark:text-white/40">preferably with clean code, occasionally with absurd prompts.</span>
+                </p>
+                <p className="text-base sm:text-lg text-black/55 dark:text-white/55 font-light leading-relaxed">
+                  Every project is a chance to solve something interesting and stretch what the web can do.
+                  I write on Medium, leave real documentation in codebases, and treat side projects like
+                  tiny experiments in taste.
+                </p>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <a
+                    href="https://medium.com/@virgildelacruz15"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-[1.03] active:scale-95 transition-transform"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Read my writing
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                  <a
+                    href="mailto:virgildelacruz15@gmail.com"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 text-sm font-light text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+                  >
+                    Say hello
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </motion.div>
             </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 sm:gap-12 md:gap-16">
-              <div>
-                <p className="text-base sm:text-lg text-black/60 dark:text-white/60 font-light leading-relaxed mb-6 sm:mb-8">
-                  I&apos;m partially a full-stack developer passionate about creating clever digital experiences. 
-                  With medium expertise in static and dynamic modern web technologies, I bring ideas either to life or lifeless 
-                  through clean code or absurd prompts.
-                </p>
-                <p className="text-base sm:text-lg text-black/60 dark:text-white/60 font-light leading-relaxed">
-                  Every project is an opportunity to solve interesting problems and push the 
-                  boundaries of what&apos;s possible on the web. I believe in writing in general as I write in Medium 
-                  and this also includes proper documentation in each codebase.
-                </p>
+
+            {/* Stats — single panel, index + value (no icon cards) */}
+            <div className="mb-14 sm:mb-20 rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
+              <div className="grid grid-cols-2 lg:grid-cols-4">
+                {aboutStats.map((stat, i) => (
+                  <div
+                    key={stat.label}
+                    className={`relative px-5 py-7 sm:px-7 sm:py-9 ${
+                      i % 2 === 1
+                        ? 'border-l border-black/10 dark:border-white/10'
+                        : ''
+                    } ${
+                      i >= 2
+                        ? 'border-t border-black/10 dark:border-white/10 lg:border-t-0'
+                        : ''
+                    } ${
+                      i > 0
+                        ? 'lg:border-l lg:border-black/10 lg:dark:border-white/10'
+                        : ''
+                    }`}
+                  >
+                    <span className="block font-mono text-[10px] sm:text-[11px] tracking-widest text-black/30 dark:text-white/30 mb-4 sm:mb-5">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="text-4xl sm:text-5xl font-light tracking-tight leading-none mb-3 tabular-nums">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
               </div>
-              
-              <div>
-                <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium mb-4 sm:mb-6 uppercase tracking-wider">
-                  Skills & Technologies
-                </h3>
-                <div className="space-y-3 sm:space-y-4">
-                  <div>
-                    <p className="text-xs sm:text-sm text-black/30 dark:text-white/30 mb-1 sm:mb-2 font-light">Frontend</p>
-                    <p className="text-sm sm:text-base text-black/60 dark:text-white/60 font-light">React, Next.js, TypeScript, Tailwind CSS</p>
+            </div>
+
+            {/* Skills — simple editorial list */}
+            <div className="mb-16 sm:mb-20 max-w-3xl">
+              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+                Skills & Technologies
+              </h3>
+              <div className="divide-y divide-black/10 dark:divide-white/10">
+                {skillGroups.map((group) => (
+                  <div
+                    key={group.title}
+                    className="grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-2 sm:gap-8 py-5 sm:py-6 first:pt-0 last:pb-0"
+                  >
+                    <p className="text-xs sm:text-sm text-black/35 dark:text-white/35 font-light pt-0.5">
+                      {group.title}
+                    </p>
+                    <p className="text-sm sm:text-base text-black/65 dark:text-white/65 font-light leading-relaxed">
+                      {group.skills.join('  ·  ')}
+                    </p>
                   </div>
-                  <div>
-                    <p className="text-xs sm:text-sm text-black/30 dark:text-white/30 mb-1 sm:mb-2 font-light">Backend</p>
-                    <p className="text-sm sm:text-base text-black/60 dark:text-white/60 font-light">Node.js, PostgreSQL, REST APIs, Express.js</p>
-                  </div>
-                  <div>
-                    <p className="text-xs sm:text-sm text-black/30 dark:text-white/30 mb-1 sm:mb-2 font-light">Tools</p>
-                    <p className="text-sm sm:text-base text-black/60 dark:text-white/60 font-light">Git, CI/CD, RoboFlow, Gemini AI, Jupyter Notebook, Google Colab</p>
-                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Infinite marquee */}
+            <div className="relative mb-16 sm:mb-20 py-4 border-y border-black/5 dark:border-white/5 overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-white dark:from-[#0a0a0a] to-transparent z-10" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-white dark:from-[#0a0a0a] to-transparent z-10" />
+              <div className="about-marquee flex w-max gap-8 sm:gap-12">
+                {[...marqueeSkills, ...marqueeSkills].map((skill, i) => (
+                  <span
+                    key={`${skill}-${i}`}
+                    className="text-sm sm:text-base font-light text-black/30 dark:text-white/30 whitespace-nowrap uppercase tracking-[0.2em]"
+                  >
+                    {skill}
+                    <span className="ml-8 sm:ml-12 text-black/15 dark:text-white/15">✦</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Closing CTA card */}
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6 }}
+              className="relative overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 bg-black text-white dark:bg-white dark:text-black p-8 sm:p-10 md:p-12"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/10 dark:bg-black/10 blur-2xl"
+              />
+              <div
+                aria-hidden="true"
+                className="absolute -left-10 bottom-0 w-40 h-40 rounded-full bg-white/5 dark:bg-black/5 blur-xl"
+              />
+              <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+                <div className="max-w-xl">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] opacity-50 mb-3 font-light">
+                    Open for collabs
+                  </p>
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.1] mb-4">
+                    Got an idea that needs a builder?
+                  </h3>
+                  <p className="text-sm sm:text-base font-light opacity-60 leading-relaxed">
+                    Whether it&apos;s a product, a weird prototype, or a problem that needs code —
+                    I&apos;m down to talk.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+                  <a
+                    href="mailto:virgildelacruz15@gmail.com"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-black dark:bg-black dark:text-white text-sm font-medium hover:scale-[1.03] active:scale-95 transition-transform"
+                  >
+                    Email me
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="https://github.com/Souleilune"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-white/25 dark:border-black/25 text-sm font-light hover:bg-white/10 dark:hover:bg-black/10 transition-colors"
+                  >
+                    GitHub
+                  </a>
                 </div>
               </div>
-            </div>
-
+            </motion.div>
           </div>
         </section>
 

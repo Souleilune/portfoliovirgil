@@ -123,6 +123,13 @@
     color: #000000;
     scroll-behavior: smooth;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Hide scrollbar, keep scrolling */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
   
   html.dark {
@@ -136,6 +143,12 @@
     margin: 0;
     padding: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  body::-webkit-scrollbar {
+    display: none;
   }
   
   body.dark {
@@ -202,4 +215,40 @@ html.dark .reading-progress-bar {
 
 html.dark .hero-grain::after {
   opacity: 0.05;
+}
+
+/* ── About section: orbit rings ── */
+@keyframes about-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.about-orbit {
+  animation: about-orbit-spin 28s linear infinite;
+}
+
+.about-orbit-reverse {
+  animation: about-orbit-spin 40s linear infinite reverse;
+}
+
+/* ── About section: skill marquee ── */
+@keyframes about-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.about-marquee {
+  animation: about-marquee 36s linear infinite;
+}
+
+.about-marquee:hover {
+  animation-play-state: paused;
 }
