@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   BookOpen,
   ArrowUpRight,
+  Mail,
+  Github,
 } from 'lucide-react';
 import TiltedCard from '@/components/TiltedCard';
 import SideRays from '@/components/SideRays';
@@ -605,20 +607,11 @@ export default function Home() {
               transition={{ duration: 0.6, ease: 'easeOut' }}
               className="mb-12 sm:mb-16 md:mb-20"
             >
-              {/* <div className="flex items-center gap-3 mb-4">
-                <span className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.25em] text-black/40 dark:text-white/40 font-light">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black/40 dark:bg-white/40 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-black/60 dark:bg-white/60" />
-                  </span>
-                  Currently building weird things
-                </span>
-              </div> */}
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-4">
-                The human{' '}
+                The dev{' '}
                 <span className="text-black/35 dark:text-white/35 italic">behind</span>
                 <br className="hidden sm:block" />
-                the commits
+                the unusual commits
               </h2>
               <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20" />
             </motion.div>
@@ -633,20 +626,6 @@ export default function Home() {
                 transition={{ duration: 0.7, ease: 'easeOut' }}
                 className="lg:col-span-5 relative flex justify-center"
               >
-                {/* Orbit ring */}
-                {/* <div
-                  aria-hidden="true"
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                >
-                  <div className="about-orbit w-[min(100%,340px)] h-[min(100%,340px)] sm:w-[380px] sm:h-[380px] rounded-full border border-dashed border-black/10 dark:border-white/10" />
-                </div>
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                >
-                  <div className="about-orbit-reverse w-[min(100%,280px)] h-[min(100%,280px)] sm:w-[320px] sm:h-[320px] rounded-full border border-black/5 dark:border-white/5" />
-                </div> */}
-
                 {/* Floating chips around photo */}
                 <motion.span
                   animate={{ y: [0, -10, 0] }}
@@ -693,7 +672,7 @@ export default function Home() {
                     displayOverlayContent={true}
                     overlayContent={
                       <p className="text-white text-sm sm:text-base font-medium px-4 py-2 bg-black/30 rounded-2xl backdrop-blur-md mt-8 ml-4 border border-white/10">
-                        hey, it&apos;s me
+                        hasta la vista
                       </p>
                     }
                   />
@@ -813,50 +792,56 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Closing CTA card */}
+            {/* Closing CTA panel */}
             <motion.div
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.6 }}
-              className="relative overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 bg-black text-white dark:bg-white dark:text-black p-8 sm:p-10 md:p-12"
+              className="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden"
             >
-              <div
-                aria-hidden="true"
-                className="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/10 dark:bg-black/10 blur-2xl"
-              />
-              <div
-                aria-hidden="true"
-                className="absolute -left-10 bottom-0 w-40 h-40 rounded-full bg-white/5 dark:bg-black/5 blur-xl"
-              />
-              <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-                <div className="max-w-xl">
-                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] opacity-50 mb-3 font-light">
+              <div className="grid lg:grid-cols-[1.2fr_1fr]">
+                {/* Copy */}
+                <div className="p-8 sm:p-10 md:p-12 lg:border-r border-black/10 dark:border-white/10">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-black/40 dark:text-white/40 mb-3 font-light">
                     Open for collabs
                   </p>
                   <h3 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.1] mb-4">
-                    Got an idea that needs a builder?
+                    Got a crazy idea that needs a crazy builder?
                   </h3>
-                  <p className="text-sm sm:text-base font-light opacity-60 leading-relaxed">
-                    Whether it&apos;s a product, a weird prototype, or a problem that needs code —
-                    I&apos;m down to talk.
+                  <p className="text-sm sm:text-base font-light text-black/50 dark:text-white/50 leading-relaxed max-w-md">
+                    Whether it&apos;s a product, a weird prototype, or a problem that needs code.
+                    Let&apos;s talk.
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+
+                {/* Contact rows */}
+                <div className="divide-y divide-black/10 dark:divide-white/10">
                   <a
                     href="mailto:virgildelacruz15@gmail.com"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-white text-black dark:bg-black dark:text-white text-sm font-medium hover:scale-[1.03] active:scale-95 transition-transform"
+                    className="group flex items-center justify-between gap-4 px-8 sm:px-10 py-6 sm:py-7 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
                   >
-                    Email me
-                    <ArrowUpRight className="w-4 h-4" />
+                    <span className="flex items-center gap-3">
+                      <Mail className="w-4 h-4 text-black/40 dark:text-white/40" />
+                      <span className="text-sm sm:text-base font-light text-black/70 dark:text-white/70">
+                        Email me
+                      </span>
+                    </span>
+                    <ArrowUpRight className="w-4 h-4 text-black/30 dark:text-white/30 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                   <a
                     href="https://github.com/Souleilune"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border border-white/25 dark:border-black/25 text-sm font-light hover:bg-white/10 dark:hover:bg-black/10 transition-colors"
+                    className="group flex items-center justify-between gap-4 px-8 sm:px-10 py-6 sm:py-7 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
                   >
-                    GitHub
+                    <span className="flex items-center gap-3">
+                      <Github className="w-4 h-4 text-black/40 dark:text-white/40" />
+                      <span className="text-sm sm:text-base font-light text-black/70 dark:text-white/70">
+                        GitHub
+                      </span>
+                    </span>
+                    <ArrowUpRight className="w-4 h-4 text-black/30 dark:text-white/30 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                 </div>
               </div>
