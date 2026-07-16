@@ -325,7 +325,7 @@ export default function Home() {
               
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-black/60 dark:text-white/60 font-light max-w-2xl mx-auto leading-relaxed">
-              I craft digital stories, life experiences, and documenting my Machine Learning journey in Medium. 
+              I craft digital stories, project experiences, and documenting my Machine Learning journey. 
               Specializing in modern web applications and creative technical solutions.
             </p>
             <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
@@ -709,13 +709,13 @@ export default function Home() {
                 className="lg:col-span-7 space-y-6"
               >
                 <p className="text-xl sm:text-2xl md:text-3xl font-light leading-snug tracking-tight text-black/80 dark:text-white/80">
-                  I craft digital stories, ship full-stack apps, and document the chaos of learning machine learning —{' '}
-                  <span className="text-black/40 dark:text-white/40">preferably with clean code, occasionally with absurd prompts.</span>
+                  I craft digital stories, ship full-stack apps, and document the chaos of learning machine learning
+                  <span className="text-black/40 dark:text-white/40"> preferably with clean code, occasionally with absurd prompts.</span>
                 </p>
                 <p className="text-base sm:text-lg text-black/55 dark:text-white/55 font-light leading-relaxed">
                   Every project is a chance to solve something interesting and stretch what the web can do.
-                  I write on Medium, leave real documentation in codebases, and treat side projects like
-                  tiny experiments in taste.
+                  I leave real documentation in codebases, and sometimes treat side projects like
+                  crazy inventions.
                 </p>
 
                 <div className="flex flex-wrap gap-3 pt-2">
