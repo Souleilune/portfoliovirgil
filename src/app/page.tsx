@@ -12,6 +12,7 @@ import {
   ArrowUpRight,
   Mail,
   Github,
+  Award,
 } from 'lucide-react';
 import TiltedCard from '@/components/TiltedCard';
 import SideRays from '@/components/SideRays';
@@ -110,6 +111,38 @@ const skillGroups = [
   {
     title: 'Also into',
     skills: ['Kotlin', 'YOLO', 'Supabase', 'Chrome Extensions'],
+  },
+];
+
+interface Certification {
+  title: string;
+  issuer: string;
+  date: string;
+  code?: string;
+}
+
+const certifications: Certification[] = [
+  {
+    title: "Certified Generative AI Professional",
+    issuer: "Oracle",
+    date: "Jul 2025",
+    code: "321036954OCI25GAIOCP",
+  },
+  {
+    title: "Certified AI Foundations Associate",
+    issuer: "Oracle",
+    date: "Jul 2025",
+    code: "321029188OCI25AICFA",
+  },
+  {
+    title: "Fundamentals of Machine Learning and Artificial Intelligence",
+    issuer: "AWS",
+    date: "Jul 2025",
+  },
+  {
+    title: "Databricks Accredited Generative AI Fundamentals",
+    issuer: "Databricks",
+    date: "Sep 2025",
   },
 ];
 
@@ -799,10 +832,43 @@ export default function Home() {
               </div>
             </div>
 
-             <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+              <div className="mb-16 sm:mb-20">
+              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
                 Certifications
               </h3>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                {certifications.map((cert) => (
+                  <div
+                    key={cert.title}
+                    className="group relative rounded-2xl border border-black/10 dark:border-white/10 p-6 sm:p-7 bg-white/50 dark:bg-white/[0.03] hover:border-black/30 dark:hover:border-white/30 hover:-translate-y-0.5 transition-all duration-500"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full border border-black/15 dark:border-white/15 flex items-center justify-center bg-black/[0.03] dark:bg-white/[0.05] transition-colors duration-500 group-hover:bg-black/5 dark:group-hover:bg-white/10">
+                        <Award className="w-5 h-5 text-black/50 dark:text-white/50" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-sm sm:text-base font-light text-black/80 dark:text-white/80 leading-snug">
+                          {cert.title}
+                        </h4>
+                        <p className="mt-1.5 text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
+                          {cert.issuer} · {cert.date}
+                        </p>
+                        {cert.code && (
+                          <p className="mt-1 text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light font-mono tracking-tight break-all">
+                            {cert.code}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+                Let&apos;s talk
+              </h3>
             {/* Closing CTA panel */}
             <motion.div
               initial={{ opacity: 0, y: 28 }}
@@ -811,8 +877,9 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden"
             >
+              
               <div className="grid lg:grid-cols-[1.2fr_1fr]">
-                {/* Copy */}
+                
                 <div className="p-8 sm:p-10 md:p-12 lg:border-r border-black/10 dark:border-white/10">
                   <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-black/40 dark:text-white/40 mb-3 font-light">
                     Open for collabs
