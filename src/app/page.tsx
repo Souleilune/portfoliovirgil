@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import TiltedCard from '@/components/TiltedCard';
 import SideRays from '@/components/SideRays';
+import GithubContributions from '@/components/GithubContributions';
+
 
 const inter = Inter({
   subsets: ['latin'],
@@ -752,6 +754,11 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+                Github
+              </h3>
+            <GithubContributions />
 
             {/* Skills — simple editorial list */}
             <div className="mb-16 sm:mb-20 max-w-3xl">
