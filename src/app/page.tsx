@@ -15,7 +15,6 @@ import {
   Award,
 } from 'lucide-react';
 import TiltedCard from '@/components/TiltedCard';
-import SideRays from '@/components/SideRays';
 import GithubContributions from '@/components/GithubContributions';
 
 
@@ -272,10 +271,10 @@ export default function Home() {
         <div className="flex items-center gap-10 sm:gap-16 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="flex items-center gap-1 sm:gap-3 flex-1 overflow-x-auto scrollbar-hide">
             <button
-              onClick={() => scrollTo('intro')}
+              onClick={() => scrollTo('about')}
               className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
-              Intro
+              The Dev
             </button>
             <button
               onClick={() => scrollTo('work')}
@@ -290,10 +289,10 @@ export default function Home() {
               Experience
             </button>
             <button
-              onClick={() => scrollTo('about')}
+              onClick={() => scrollTo('contact')}
               className="text-xs sm:text-sm font-medium text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200 px-3 sm:px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 whitespace-nowrap"
             >
-              About
+              Contact
             </button>
           </div>
           <button
@@ -327,83 +326,196 @@ export default function Home() {
 
       {/* Main Content */}
       <main>
-        {/* Intro Section */}
-        <section 
-          id="intro"
-          ref={(el) => { sectionRefs.current['intro'] = el; }}
-          className="relative hero-grain min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-12 pt-6 sm:pt-16 pb-20 sm:pb-32"
+        {/* The Dev / About Section */}
+        <section
+          id="about"
+          ref={(el) => {
+            sectionRefs.current['about'] = el;
+            aboutRef.current = el;
+          }}
+          onMouseMove={handleAboutMouseMove}
+          className="relative overflow-hidden pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 sm:px-6 md:px-12"
         >
-          {/* Ambient light rays — dark mode only */}
-          <div className="hidden dark:block absolute inset-0 overflow-hidden">
-            <SideRays
-              speed={2.5}
-              rayColor1="#ffffff"
-              rayColor2="#9ca3af"
-              intensity={2}
-              spread={2}
-              origin="top-right"
-              tilt={0}
-              saturation={1.5}
-              blend={0.75}
-              falloff={1.6}
-              opacity={1}
-            />
-          </div>
+          {/* Parallax ambient blobs */}
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 sm:w-[28rem] sm:h-[28rem] rounded-full bg-black/[0.04] dark:bg-white/[0.05] blur-3xl"
+            style={{ x: blob1X, y: blob1Y }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/3 -right-32 w-80 h-80 sm:w-[32rem] sm:h-[32rem] rounded-full bg-black/[0.03] dark:bg-white/[0.04] blur-3xl"
+            style={{ x: blob2X, y: blob2Y }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 left-1/3 w-64 h-64 sm:w-96 sm:h-96 rounded-full bg-black/[0.035] dark:bg-white/[0.035] blur-3xl"
+            style={{ x: blob3X, y: blob3Y }}
+          />
 
-          <div className="max-w-4xl w-full text-center">
-            <div className="mb-6 sm:mb-8">
-              <span className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-light tracking-wider uppercase">
-                Full-Stack Developer
-              </span>
+          <div className="relative max-w-6xl mx-auto w-full z-10">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="mb-8 sm:mb-10 text-center"
+            >
+              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider">
+                The dev
+              </h3>
+            </motion.div>
+
+            {/* Hero row: photo + bio */}
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center mb-10 sm:mb-12">
+              {/* Photo stage */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className="lg:col-span-5 relative flex justify-center"
+              >
+                {/* Floating chips around photo */}
+                <motion.span
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute top-2 left-0 sm:left-4 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Full-stack
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                  className="absolute top-16 right-0 sm:right-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  ML curious
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                  className="absolute bottom-10 left-0 sm:left-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Writes on Medium
+                </motion.span>
+                <motion.span
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+                  className="absolute bottom-2 right-2 sm:right-6 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+                >
+                  Ships at 2am
+                </motion.span>
+
+                <div className="relative z-10">
+                  <TiltedCard
+                    imageSrc="/dev.jpg"
+                    altText="Virgil Barcelon - Full-Stack Developer"
+                    captionText="Virgil Barcelon"
+                    containerHeight="300px"
+                    containerWidth="300px"
+                    imageHeight="300px"
+                    imageWidth="300px"
+                    rotateAmplitude={14}
+                    scaleOnHover={1.12}
+                    showMobileWarning={false}
+                    showTooltip={true}
+                    displayOverlayContent={true}
+                    overlayContent={
+                      <p className="text-white text-sm sm:text-base font-medium px-4 py-2 bg-black/30 rounded-2xl backdrop-blur-md mt-8 ml-4 border border-white/10">
+                        hasta la vista
+                      </p>
+                    }
+                  />
+                </div>
+              </motion.div>
+
+              {/* Bio */}
+              <motion.div
+                initial={{ opacity: 0, x: 32 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
+                className="lg:col-span-7 space-y-6"
+              >
+                <p className="text-xl sm:text-2xl md:text-3xl font-light leading-snug tracking-tight text-black/80 dark:text-white/80">
+                  I craft digital stories, ship full-stack apps, and document the chaos of learning machine learning
+                  <span className="text-black/40 dark:text-white/40"> preferably with clean code, occasionally with absurd prompts.</span>
+                </p>
+                <p className="text-base sm:text-lg text-black/55 dark:text-white/55 font-light leading-relaxed">
+                  Every project is a chance to solve something interesting and stretch what the web can do.
+                  I leave real documentation in codebases, and sometimes treat side projects like
+                  crazy inventions.
+                </p>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <a
+                    href="https://medium.com/@virgildelacruz15"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-[1.03] active:scale-95 transition-transform"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Read my writing
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                  <a
+                    href="mailto:virgildelacruz15@gmail.com"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 text-sm font-light text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+                  >
+                    Say hello
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </motion.div>
             </div>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-8 sm:mb-12 tracking-tight">
-              Virgil <span className="text-black/60 dark:text-white/60">Barcelon</span>
-              <br />
-              
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-black/60 dark:text-white/60 font-light max-w-2xl mx-auto leading-relaxed">
-              I craft digital stories, project experiences, and documenting my Machine Learning journey. 
-              Specializing in modern web applications and creative technical solutions.
-            </p>
-            <div className="mt-12 sm:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-              <a 
-                href="#work"
-                onClick={(e) => { e.preventDefault(); scrollTo('work'); }}
-                className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors border-b border-black/20 dark:border-white/20 hover:border-black/40 dark:hover:border-white/40 pb-1"
-              >
-                View Work →
-              </a>
-              <a 
-                href="#writing"
-                onClick={(e) => { e.preventDefault(); scrollTo('writing'); }}
-                className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors border-b border-black/20 dark:border-white/20 hover:border-black/40 dark:hover:border-white/40 pb-1"
-              >
-                View Experience →
-              </a>
-              <a 
-                href="#contact"
-                onClick={(e) => { e.preventDefault(); scrollTo('about'); }}
-                className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors border-b border-black/20 dark:border-white/20 hover:border-black/40 dark:hover:border-white/40 pb-1"
-              >
-                Get in Touch →
-              </a>
+
+            {/* Stats — single panel, index + value (no icon cards) */}
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
+              <div className="grid grid-cols-2 lg:grid-cols-4">
+                {aboutStats.map((stat, i) => (
+                  <div
+                    key={stat.label}
+                    className={`relative px-5 py-7 sm:px-7 sm:py-9 ${
+                      i % 2 === 1
+                        ? 'border-l border-black/10 dark:border-white/10'
+                        : ''
+                    } ${
+                      i >= 2
+                        ? 'border-t border-black/10 dark:border-white/10 lg:border-t-0'
+                        : ''
+                    } ${
+                      i > 0
+                        ? 'lg:border-l lg:border-black/10 lg:dark:border-white/10'
+                        : ''
+                    }`}
+                  >
+                    <span className="block font-mono text-[10px] sm:text-[11px] tracking-widest text-black/30 dark:text-white/30 mb-4 sm:mb-5">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="text-4xl sm:text-5xl font-light tracking-tight leading-none mb-3 tabular-nums">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
-
-        
 
         {/* Work Section */}
         <section 
           id="work"
           ref={(el) => { sectionRefs.current['work'] = el; }}
-          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12"
+          className="pt-6 pb-6 sm:py-10 px-4 sm:px-6 md:px-12"
         >
           <div className="max-w-6xl mx-auto">
-            <div className="mb-12 sm:mb-16 md:mb-24">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-4">Selected Work</h2>
-              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20"></div>
-            </div>
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-6 sm:mb-8">
+              Selected Work
+            </h3>
 
             {/* Project Collage */}
             <div className="grid grid-cols-1 md:grid-cols-12 auto-rows-[220px] sm:auto-rows-[260px] gap-4 sm:gap-5">
@@ -518,16 +630,12 @@ export default function Home() {
         <section 
           id="writing"
           ref={(el) => { sectionRefs.current['writing'] = el; }}
-          className="min-h-screen pt-12 pb-20 sm:py-32 px-4 sm:px-6 md:px-12"
+          className="pt-6 pb-6 sm:py-10 px-4 sm:px-6 md:px-12"
         >
           <div className="max-w-6xl mx-auto">
-            <div className="mb-12 sm:mb-16 md:mb-24">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-4">Experience</h2>
-              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20 mb-4"></div>
-              <p className="text-sm sm:text-base text-black/50 dark:text-white/50 font-light">
-                Where I&apos;ve worked and what I&apos;ve built
-              </p>
-            </div>
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-6 sm:mb-8">
+              Experience
+            </h3>
 
             {/* Fishbone timeline */}
             <div className="relative">
@@ -606,198 +714,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* About Section */}
+        {/* Certifications Section */}
         <section
-          id="about"
-          ref={(el) => {
-            sectionRefs.current['about'] = el;
-            aboutRef.current = el;
-          }}
-          onMouseMove={handleAboutMouseMove}
-          className="relative min-h-screen overflow-hidden pt-16 pb-24 sm:py-32 px-4 sm:px-6 md:px-12"
+          id="certifications"
+          ref={(el) => { sectionRefs.current['certifications'] = el; }}
+          className="pt-6 pb-6 sm:py-10 px-4 sm:px-6 md:px-12"
         >
-          {/* Parallax ambient blobs */}
-          <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 sm:w-[28rem] sm:h-[28rem] rounded-full bg-black/[0.04] dark:bg-white/[0.05] blur-3xl"
-            style={{ x: blob1X, y: blob1Y }}
-          />
-          <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/3 -right-32 w-80 h-80 sm:w-[32rem] sm:h-[32rem] rounded-full bg-black/[0.03] dark:bg-white/[0.04] blur-3xl"
-            style={{ x: blob2X, y: blob2Y }}
-          />
-          <motion.div
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-20 left-1/3 w-64 h-64 sm:w-96 sm:h-96 rounded-full bg-black/[0.035] dark:bg-white/[0.035] blur-3xl"
-            style={{ x: blob3X, y: blob3Y }}
-          />
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-6 sm:mb-8">
+              Certifications
+            </h3>
 
-          <div className="relative max-w-6xl mx-auto w-full z-10">
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="mb-12 sm:mb-16 md:mb-20"
-            >
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-4">
-                The dev{' '}
-                <span className="text-black/35 dark:text-white/35 italic">behind</span>
-                <br className="hidden sm:block" />
-                the unusual commits
-              </h2>
-              <div className="w-16 sm:w-24 h-px bg-black/20 dark:bg-white/20" />
-            </motion.div>
-
-            {/* Hero row: photo + bio */}
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center mb-14 sm:mb-20">
-              {/* Photo stage */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
-                className="lg:col-span-5 relative flex justify-center"
-              >
-                {/* Floating chips around photo */}
-                <motion.span
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute top-2 left-0 sm:left-4 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              {certifications.map((cert) => (
+                <div
+                  key={cert.title}
+                  className="group relative rounded-2xl border border-black/10 dark:border-white/10 p-6 sm:p-7 bg-white/50 dark:bg-white/[0.03] hover:border-black/30 dark:hover:border-white/30 hover:-translate-y-0.5 transition-all duration-500"
                 >
-                  Full-stack
-                </motion.span>
-                <motion.span
-                  animate={{ y: [0, 12, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                  className="absolute top-16 right-0 sm:right-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
-                >
-                  ML curious
-                </motion.span>
-                <motion.span
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                  className="absolute bottom-10 left-0 sm:left-2 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
-                >
-                  Writes on Medium
-                </motion.span>
-                <motion.span
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                  className="absolute bottom-2 right-2 sm:right-6 z-20 text-[10px] sm:text-xs px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-md text-black/60 dark:text-white/60 font-light shadow-sm"
-                >
-                  Ships at 2am
-                </motion.span>
-
-                <div className="relative z-10">
-                  <TiltedCard
-                    imageSrc="/dev.jpg"
-                    altText="Virgil Barcelon - Full-Stack Developer"
-                    captionText="Virgil Barcelon"
-                    containerHeight="300px"
-                    containerWidth="300px"
-                    imageHeight="300px"
-                    imageWidth="300px"
-                    rotateAmplitude={14}
-                    scaleOnHover={1.12}
-                    showMobileWarning={false}
-                    showTooltip={true}
-                    displayOverlayContent={true}
-                    overlayContent={
-                      <p className="text-white text-sm sm:text-base font-medium px-4 py-2 bg-black/30 rounded-2xl backdrop-blur-md mt-8 ml-4 border border-white/10">
-                        hasta la vista
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full border border-black/15 dark:border-white/15 flex items-center justify-center bg-black/[0.03] dark:bg-white/[0.05] transition-colors duration-500 group-hover:bg-black/5 dark:group-hover:bg-white/10">
+                      <Award className="w-5 h-5 text-black/50 dark:text-white/50" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm sm:text-base font-light text-black/80 dark:text-white/80 leading-snug">
+                        {cert.title}
                       </p>
-                    }
-                  />
-                </div>
-              </motion.div>
-
-              {/* Bio */}
-              <motion.div
-                initial={{ opacity: 0, x: 32 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
-                className="lg:col-span-7 space-y-6"
-              >
-                <p className="text-xl sm:text-2xl md:text-3xl font-light leading-snug tracking-tight text-black/80 dark:text-white/80">
-                  I craft digital stories, ship full-stack apps, and document the chaos of learning machine learning
-                  <span className="text-black/40 dark:text-white/40"> preferably with clean code, occasionally with absurd prompts.</span>
-                </p>
-                <p className="text-base sm:text-lg text-black/55 dark:text-white/55 font-light leading-relaxed">
-                  Every project is a chance to solve something interesting and stretch what the web can do.
-                  I leave real documentation in codebases, and sometimes treat side projects like
-                  crazy inventions.
-                </p>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <a
-                    href="https://medium.com/@virgildelacruz15"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 bg-black text-white dark:bg-white dark:text-black text-sm font-medium hover:scale-[1.03] active:scale-95 transition-transform"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    Read my writing
-                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
-                  <a
-                    href="mailto:virgildelacruz15@gmail.com"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-black/15 dark:border-white/15 text-sm font-light text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5 hover:border-black/30 dark:hover:border-white/30 transition-colors"
-                  >
-                    Say hello
-                    <ArrowUpRight className="w-4 h-4" />
-                  </a>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Stats — single panel, index + value (no icon cards) */}
-            <div className="mb-14 sm:mb-20 rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden">
-              <div className="grid grid-cols-2 lg:grid-cols-4">
-                {aboutStats.map((stat, i) => (
-                  <div
-                    key={stat.label}
-                    className={`relative px-5 py-7 sm:px-7 sm:py-9 ${
-                      i % 2 === 1
-                        ? 'border-l border-black/10 dark:border-white/10'
-                        : ''
-                    } ${
-                      i >= 2
-                        ? 'border-t border-black/10 dark:border-white/10 lg:border-t-0'
-                        : ''
-                    } ${
-                      i > 0
-                        ? 'lg:border-l lg:border-black/10 lg:dark:border-white/10'
-                        : ''
-                    }`}
-                  >
-                    <span className="block font-mono text-[10px] sm:text-[11px] tracking-widest text-black/30 dark:text-white/30 mb-4 sm:mb-5">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <p className="text-4xl sm:text-5xl font-light tracking-tight leading-none mb-3 tabular-nums">
-                      {stat.value}
-                    </p>
-                    <p className="text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
-                      {stat.label}
-                    </p>
+                      <p className="mt-1.5 text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
+                        {cert.issuer} · {cert.date}
+                      </p>
+                      {cert.code && (
+                        <p className="mt-1 text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light font-mono tracking-tight break-all">
+                          {cert.code}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-            
-            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
-                Github
-              </h3>
-            <GithubContributions />
+          </div>
+        </section>
 
-            {/* Skills — simple editorial list */}
-            <div className="mb-16 sm:mb-20 max-w-3xl">
-              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
-                Skills & Technologies
-              </h3>
+         {/* Github Section */}
+        <section
+          id="github"
+          ref={(el) => { sectionRefs.current['github'] = el; }}
+          className="pt-6 pb-2 sm:pt-10 sm:pb-3 px-4 sm:px-6 md:px-12"
+        >
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-6 sm:mb-8">
+              Github
+            </h3>
+            <GithubContributions />
+          </div>
+        </section>
+
+        {/* Skills Section */}
+        <section
+          id="skills"
+          ref={(el) => { sectionRefs.current['skills'] = el; }}
+          className="pt-10 pb-12 sm:py-16 px-4 sm:px-6 md:px-12"
+        >
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+              Skills
+            </h3>
+
+            <div className="mb-10 sm:mb-12 max-w-3xl">
               <div className="divide-y divide-black/10 dark:divide-white/10">
                 {skillGroups.map((group) => (
                   <div
@@ -816,7 +799,7 @@ export default function Home() {
             </div>
 
             {/* Infinite marquee */}
-            <div className="relative mb-16 sm:mb-20 py-4 border-y border-black/5 dark:border-white/5 overflow-hidden">
+            <div className="relative py-4 border-y border-black/5 dark:border-white/5 overflow-hidden">
               <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-white dark:from-[#0a0a0a] to-transparent z-10" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-white dark:from-[#0a0a0a] to-transparent z-10" />
               <div className="about-marquee flex w-max gap-8 sm:gap-12">
@@ -831,45 +814,22 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </div>
+        </section>
 
-              <div className="mb-16 sm:mb-20">
-              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
-                Certifications
-              </h3>
+      
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                {certifications.map((cert) => (
-                  <div
-                    key={cert.title}
-                    className="group relative rounded-2xl border border-black/10 dark:border-white/10 p-6 sm:p-7 bg-white/50 dark:bg-white/[0.03] hover:border-black/30 dark:hover:border-white/30 hover:-translate-y-0.5 transition-all duration-500"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full border border-black/15 dark:border-white/15 flex items-center justify-center bg-black/[0.03] dark:bg-white/[0.05] transition-colors duration-500 group-hover:bg-black/5 dark:group-hover:bg-white/10">
-                        <Award className="w-5 h-5 text-black/50 dark:text-white/50" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm sm:text-base font-light text-black/80 dark:text-white/80 leading-snug">
-                          {cert.title}
-                        </h4>
-                        <p className="mt-1.5 text-xs sm:text-sm text-black/45 dark:text-white/45 font-light">
-                          {cert.issuer} · {cert.date}
-                        </p>
-                        {cert.code && (
-                          <p className="mt-1 text-[10px] sm:text-xs text-black/30 dark:text-white/30 font-light font-mono tracking-tight break-all">
-                            {cert.code}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* Let's Talk / Contact Section */}
+        <section
+          id="contact"
+          ref={(el) => { sectionRefs.current['contact'] = el; }}
+          className="pt-4 pb-16 sm:pt-6 sm:pb-24 px-4 sm:px-6 md:px-12"
+        >
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+              Let&apos;s talk
+            </h3>
 
-              <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
-                Let&apos;s talk
-              </h3>
-            {/* Closing CTA panel */}
             <motion.div
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -877,9 +837,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="rounded-2xl border border-black/10 dark:border-white/10 overflow-hidden"
             >
-              
               <div className="grid lg:grid-cols-[1.2fr_1fr]">
-                
                 <div className="p-8 sm:p-10 md:p-12 lg:border-r border-black/10 dark:border-white/10">
                   <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-black/40 dark:text-white/40 mb-3 font-light">
                     Open for collabs

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Github, GitCommitHorizontal } from 'lucide-react';
 
 interface ContributionDay {
   date: string;
@@ -80,36 +79,18 @@ export default function GithubContributions() {
   if (error) return null;
 
   const weeks = data ? buildWeeks(data.contributions) : [];
-  const totalThisYear = data
-    ? Object.values(data.total).reduce((sum, n) => sum + n, 0)
-    : 0;
 
   return (
-    <div className="mb-16 sm:mb-20 max-w-6xl mx-auto flex flex-col items-center">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 mb-8 sm:mb-10 text-center sm:text-left">
-        <div className="flex items-center justify-center gap-2">
-          {/* <Github className="w-4 h-4 text-black/40 dark:text-white/40" /> */}
-          {/* <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider">
-            GitHub Contributions
-          </h3> */}
-        </div>
-        {/* {!loading && data && (
-          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-black/45 dark:text-white/45 font-light sm:before:content-['·'] sm:before:mr-2 sm:before:text-black/25 dark:sm:before:text-white/25">
-            <GitCommitHorizontal className="w-4 h-4 text-black/30 dark:text-white/30" />
-            <span>{totalThisYear.toLocaleString()} contributions in the last year</span>
-          </div>
-        )} */}
-      </div>
-
+    <div className="mb-4 sm:mb-5 w-full flex flex-col items-center">
       {loading ? (
-        <div className="h-[110px] flex items-center justify-center text-sm text-black/30 dark:text-white/30 font-light">
+        <div className="h-[80px] flex items-center justify-center text-xs text-black/30 dark:text-white/30 font-light">
           Loading contributions...
         </div>
       ) : (
         <div className="overflow-x-auto scrollbar-hide max-w-full flex justify-center">
           <div className="flex gap-[2px] w-max">
             {weeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-[3px]">
+              <div key={wi} className="flex flex-col gap-[2px]">
                 {week.map((day, di) => (
                   <div
                     key={di}
@@ -118,7 +99,7 @@ export default function GithubContributions() {
                         ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${day.date}`
                         : undefined
                     }
-                    className={`w-[10px] h-[10px] sm:w-4 sm:h-4 rounded-[2px] ${
+                    className={`w-[10px] h-[10px] sm:w-[17px] sm:h-[17px] rounded-[3px] ${
                       day.level >= 0 ? levelClasses[day.level] : 'bg-transparent'
                     }`}
                   />
@@ -129,10 +110,10 @@ export default function GithubContributions() {
         </div>
       )}
 
-      <div className="mt-6 flex items-center justify-center gap-2 text-[10px] sm:text-xs text-black/35 dark:text-white/35 font-light">
+      <div className="mt-3 flex items-center justify-center gap-1.5 text-[9px] sm:text-[10px] text-black/35 dark:text-white/35 font-light">
         <span>Less</span>
         {levelClasses.map((cls, i) => (
-          <span key={i} className={`w-[10px] h-[10px] sm:w-3 sm:h-3 rounded-[2px] ${cls}`} />
+          <span key={i} className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-[1px] ${cls}`} />
         ))}
         <span>More</span>
       </div>
