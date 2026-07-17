@@ -799,6 +799,10 @@ export default function Home() {
               </div>
             </div>
 
+             <h3 className="text-xs sm:text-sm text-black/40 dark:text-white/40 font-medium uppercase tracking-wider mb-8 sm:mb-10">
+                Certifications
+              </h3>
+
             {/* Closing CTA panel */}
             <motion.div
               initial={{ opacity: 0, y: 28 }}
