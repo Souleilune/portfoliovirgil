@@ -105,11 +105,11 @@ const skillGroups = [
   },
   {
     title: 'Tools & ML',
-    skills: ['Git', 'CI/CD', 'RoboFlow', 'Gemini AI', 'Jupyter', 'Colab'],
+    skills: ['Git', 'CI/CD', 'Claude Code','RoboFlow', 'Gemini AI', 'Jupyter', 'Colab'],
   },
   {
     title: 'Also into',
-    skills: ['Kotlin', 'YOLO', 'Supabase', 'Chrome Extensions'],
+    skills: ['YOLO', 'Supabase', 'Chrome Extensions'],
   },
 ];
 
@@ -121,6 +121,12 @@ interface Certification {
 }
 
 const certifications: Certification[] = [
+  {
+    title: "Claude Code 101",
+    issuer: "Anthropic",
+    date: "Jul 2026",
+    code: "q6fv9g2dtpy9"
+  },
   {
     title: "Certified Generative AI Professional",
     issuer: "Oracle",
