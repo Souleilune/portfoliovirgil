@@ -154,7 +154,7 @@ const certifications: Certification[] = [
 const marqueeSkills = [
   'React', 'Next.js', 'TypeScript', 'Tailwind', 'Node.js', 'PostgreSQL',
   'Supabase', 'Gemini AI', 'Kotlin', 'YOLO', 'Flask', 'Ollama',
-  'Vercel', 'Render', 'Git', 'Firebase', 'Python', 'Android',
+  'Vercel', 'Render', 'Git', 'Firebase', 'Python', 'Android', 'Claude Code',
 ];
 
 const aboutStats = [
